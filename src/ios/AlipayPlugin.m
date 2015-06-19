@@ -29,18 +29,21 @@
 
 
 - (void) callAlipaySDK:(CDVInvokedUrlCommand*) command {
-    CDVPluginResult* pluginResult = nil;
+
+    __block CDVPluginResult* pluginResult = nil;
     
     NSString* orderStr = [command.arguments objectAtIndex:0];
     if (orderStr != nil) {
         [[AlipaySDK defaultService] payOrder:orderStr fromScheme:self.appScheme callback:^(NSDictionary *resultDic) {
             NSLog(@"AlipayResult = %@",resultDic);
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:resultDic];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }];
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     } else {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Arg was null"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 
